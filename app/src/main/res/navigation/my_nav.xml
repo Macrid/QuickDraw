@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_nav"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.quickdraw.fragments.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
+            app:enterAnim="@anim/fragment_open_enter" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainMenuFragment"
+        android:name="com.example.quickdraw.fragments.MainMenuFragment"
+        android:label="fragment_main_menu"
+        tools:layout="@layout/fragment_main_menu" >
+        <action
+            android:id="@+id/action_mainMenuFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_friendlistFragment"
+            app:destination="@id/friendlistFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_gameOverviewFragment"
+            app:destination="@id/gameOverviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/friendlistFragment"
+        android:name="com.example.quickdraw.fragments.FriendlistFragment"
+        android:label="fragment_friendlist"
+        tools:layout="@layout/fragment_friendlist" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.quickdraw.fragments.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/gameOverviewFragment"
+        android:name="com.example.quickdraw.fragments.GameOverviewFragment"
+        android:label="fragment_game_overview"
+        tools:layout="@layout/fragment_game_overview" >
+        <action
+            android:id="@+id/action_gameOverviewFragment_to_drawingFragment"
+            app:destination="@id/drawingFragment" />
+        <action
+            android:id="@+id/action_gameOverviewFragment_to_guessingFragment"
+            app:destination="@id/guessingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/drawingFragment"
+        android:name="com.example.quickdraw.fragments.DrawingFragment"
+        android:label="fragment_drawing"
+        tools:layout="@layout/fragment_drawing" />
+    <fragment
+        android:id="@+id/guessingFragment"
+        android:name="com.example.quickdraw.fragments.GuessingFragment"
+        android:label="fragment_guessing"
+        tools:layout="@layout/fragment_guessing" />
+</navigation>

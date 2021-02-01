@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "717213145936",
+    "project_id": "androidquickdraw",
+    "storage_bucket": "androidquickdraw.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717213145936:android:3c855c1a9e8dd2888b6a55",
+        "android_client_info": {
+          "package_name": "com.erikpersson.quickdraw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "717213145936-57mf58e9o00fecq3k38s4vr918eed5vr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9FtmDIIOUJjp9ZyEfAGN9-JEaO5iWE7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "717213145936-57mf58e9o00fecq3k38s4vr918eed5vr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
