@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
+import com.example.quickdraw.MyCanvasView
 import com.example.quickdraw.R
 
 class DrawingFragment : Fragment() {
@@ -36,5 +39,15 @@ class DrawingFragment : Fragment() {
         firstWordButton.setOnClickListener {
             requireView().findViewById<ConstraintLayout>(R.id.overlayCL).isGone = true
         }
+
+        var myCanvasView = MyCanvasView(this.requireContext())
+
+        requireView().findViewById<FrameLayout>(R.id.canvasFrame).addView(myCanvasView)
+
+        requireView().findViewById<Button>(R.id.switchColorButton).setOnClickListener {
+            myCanvasView.drawColor = ResourcesCompat.getColor(resources, R.color.black, null)
+            myCanvasView.changeColor()
+        }
+
     }
 }

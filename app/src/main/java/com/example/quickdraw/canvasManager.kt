@@ -23,9 +23,9 @@ class MyCanvasView(context: Context) : View(context) {
 
     private val touchTolerance =  0//ViewConfiguration.get(context).scaledTouchSlop
 
-    private val drawColor = ResourcesCompat.getColor(resources, R.color.white, null)
+    var drawColor = ResourcesCompat.getColor(resources, R.color.white, null)
 
-    private val paint = Paint().apply {
+    val paint = Paint().apply {
         color = drawColor
         // Smooths out edges of what is drawn without affecting shape.
         isAntiAlias = true
@@ -37,6 +37,19 @@ class MyCanvasView(context: Context) : View(context) {
         strokeWidth = STROKE_WIDTH // default: Hairline-width (really thin)
     }
 
+    fun changeColor(){
+        paint.apply {
+            color = drawColor
+            // Smooths out edges of what is drawn without affecting shape.
+            isAntiAlias = true
+            // Dithering affects how colors with higher-precision than the device are down-sampled.
+            isDither = true
+            style = Paint.Style.STROKE // default: FILL
+            strokeJoin = Paint.Join.ROUND // default: MITER
+            strokeCap = Paint.Cap.ROUND // default: BUTT
+            strokeWidth = STROKE_WIDTH // default: Hairline-width (really thin)
+        }
+    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         motionTouchEventX = event.x
