@@ -10,18 +10,23 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quickdraw.FriendlistAdapter
+import com.example.quickdraw.adapters.FriendlistAdapter
 import com.example.quickdraw.R
+import com.example.quickdraw.adapters.FriendlistSearchAdapter
+import com.example.quickdraw.viewmodels.FriendlistViewModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class FriendlistFragment : Fragment() {
+
+    lateinit var friendlistVM: FriendlistViewModel
+    var friendlistSearchAdapter = FriendlistSearchAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,46 +51,48 @@ class FriendlistFragment : Fragment() {
         friendlistView.layoutManager = LinearLayoutManager(this.context)
         friendlistView.adapter = friendlistAdapter
 
+        friendlistVM = ViewModelProvider(this).get(FriendlistViewModel::class.java)
+        friendlistSearchAdapter.mainFragment = this
 
         val friendSearch = requireView().findViewById<SearchView>(R.id.friendSearch)
-        val friendSearchListView = requireView().findViewById<ListView>(R.id.friendSearchListView)
+        val friendSearchListView = requireView().findViewById<RecyclerView>(R.id.friendSearchListView)
 
-        var userDisplayNames = mutableListOf<String>()
+        //var userDisplayNames = mutableListOf<String>()
 
-        userDisplayNames.add("Test")
+        //userDisplayNames.add("Test")
 
-        val friendSearchAdapter: ArrayAdapter<String> = ArrayAdapter(requireContext(), R.layout.friend_search_item, userDisplayNames)
+        //val friendSearchAdapter: ArrayAdapter<String> = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, userDisplayNames)
 
-        friendSearchListView.adapter = friendSearchAdapter
+        friendSearchListView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        friendSearchListView.adapter = friendlistSearchAdapter
 
-        val databaseRef = Firebase.database.reference.child("Users")
-        val postListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (user in dataSnapshot.children)
-                {
-                    Log.w("Debug", user.child("Display Name").value as String)
-                    userDisplayNames.add(user.child("Display Name").value as String)
-                }
-                friendSearchAdapter.notifyDataSetChanged()
-
-                Log.w("Debug", userDisplayNames.count().toString())
+        friendlistVM.loadUsers()
+        friendSearch.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                friendlistVM.filterUsers(query!!)
+                friendlistSearchAdapter.notifyDataSetChanged()
+                return false
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Getting Post failed, log a message
-                Log.w("Debug", databaseError.toException())
+            override fun onQueryTextChange(newText: String?): Boolean {
+               // friendlistVM.filterUsers(newText!!)
+                return false
             }
-        }
-        databaseRef.addListenerForSingleValueEvent(postListener)
+        })
 
-
+        /*
         friendSearch.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 friendSearch.clearFocus()
-                if(userDisplayNames.contains(query))
-                {
-                    friendSearchAdapter.filter.filter(query)
+                friendlistVM.allUsers.forEach {
+                    if(it.displayName!!.contains(query!!))
+                    {
+
+                    }
                 }
+                //{
+                   // friendSearchAdapter.filter.filter(query)
+               // }
                 else{
                     Toast.makeText(requireContext().applicationContext, "Found nobody with that name :(", Toast.LENGTH_LONG).show()
                 }
@@ -93,9 +100,11 @@ class FriendlistFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                friendSearchAdapter.filter.filter(newText)
+                //friendSearchAdapter.filter.filter(newText)
                 return false
             }
         })
+
+         */
     }
 }

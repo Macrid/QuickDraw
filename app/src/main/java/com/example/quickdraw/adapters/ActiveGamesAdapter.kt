@@ -1,4 +1,4 @@
-package com.example.quickdraw
+package com.example.quickdraw.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.navigation.Navigation
+import com.example.quickdraw.R
 
 class ActiveGamesAdapter() : RecyclerView.Adapter<ActiveGamesViewHolder>() {
 

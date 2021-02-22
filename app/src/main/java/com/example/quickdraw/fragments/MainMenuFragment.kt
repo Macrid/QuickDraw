@@ -9,7 +9,7 @@ import android.widget.Button
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quickdraw.ActiveGamesAdapter
+import com.example.quickdraw.adapters.ActiveGamesAdapter
 import com.example.quickdraw.R
 
 
