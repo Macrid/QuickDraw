@@ -1,15 +1,11 @@
 package com.example.quickdraw.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,16 +13,12 @@ import com.example.quickdraw.adapters.FriendlistAdapter
 import com.example.quickdraw.R
 import com.example.quickdraw.adapters.FriendlistSearchAdapter
 import com.example.quickdraw.viewmodels.FriendlistViewModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 
 class FriendlistFragment : Fragment() {
 
     lateinit var friendlistVM: FriendlistViewModel
     var friendlistSearchAdapter = FriendlistSearchAdapter()
+    var friendlistAdapter = FriendlistAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,11 +37,12 @@ class FriendlistFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        var friendlistAdapter = FriendlistAdapter()
         friendlistAdapter.mainFragment = this
         var friendlistView = requireView().findViewById<RecyclerView>(R.id.friendListRV)
         friendlistView.layoutManager = LinearLayoutManager(this.context)
         friendlistView.adapter = friendlistAdapter
+
+
 
         friendlistVM = ViewModelProvider(this).get(FriendlistViewModel::class.java)
         friendlistSearchAdapter.mainFragment = this
@@ -57,16 +50,10 @@ class FriendlistFragment : Fragment() {
         val friendSearch = requireView().findViewById<SearchView>(R.id.friendSearch)
         val friendSearchListView = requireView().findViewById<RecyclerView>(R.id.friendSearchListView)
 
-        //var userDisplayNames = mutableListOf<String>()
-
-        //userDisplayNames.add("Test")
-
-        //val friendSearchAdapter: ArrayAdapter<String> = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, userDisplayNames)
-
         friendSearchListView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         friendSearchListView.adapter = friendlistSearchAdapter
 
-        friendlistVM.loadUsers()
+        friendlistVM.loadData { (friendlistView.adapter as FriendlistAdapter).notifyDataSetChanged() }
         friendSearch.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 friendlistVM.filterUsers(query!!)

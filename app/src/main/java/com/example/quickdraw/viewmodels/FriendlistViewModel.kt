@@ -1,13 +1,11 @@
 package com.example.quickdraw.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.quickdraw.models.User
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -17,15 +15,22 @@ class FriendlistViewModel : ViewModel() {
     //var userDisplayNames = mutableListOf<String>()
     private var allUsers = mutableListOf<User>()
     private var filteredUsers = mutableListOf<User>()
+    private var allFriends = mutableListOf<User>()
+    private var allFriendRequests = mutableListOf<User>()
 
     fun getFilteredUsers() : MutableList<User>
     {
         return  filteredUsers
     }
 
-    fun getUsers() : MutableList<User>
+    fun getAllFriends() : MutableList<User>
     {
-        return allUsers
+        return allFriends
+    }
+
+    fun getAllFriendRequests() : MutableList<User>
+    {
+        return allFriendRequests
     }
 
     fun filterUsers(searchValue : String)
@@ -40,7 +45,7 @@ class FriendlistViewModel : ViewModel() {
         Log.w("debug", filteredUsers.toString())
     }
 
-    fun loadUsers()
+    fun loadData(notifyDataChangeFunction: () -> (Unit))
     {
         val databaseRef = Firebase.database.reference.child("Users")
         val postListener = object : ValueEventListener {
@@ -55,6 +60,9 @@ class FriendlistViewModel : ViewModel() {
                     var tempUser = user.getValue<User>()!!
                     allUsers.add(tempUser)
                 }
+                loadFriends(notifyDataChangeFunction)
+                loadFriendRequests(notifyDataChangeFunction)
+
                 //Log.w("Debug", userDisplayNames.count().toString())
             }
 
@@ -67,8 +75,62 @@ class FriendlistViewModel : ViewModel() {
 
     }
 
+    fun loadFriends(notifyDataChangeFunction: () -> (Unit))
+    {
+        val databaseRef = Firebase.database.reference.child("Users").child(Firebase.auth.uid!!).child("Friends")
+        val postListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (friend in dataSnapshot.children)
+                {
+                    var tempFriend = User()
+                    tempFriend.ID = friend.value as String
+                    allUsers.forEach(){
+                        if (it.ID == tempFriend.ID)
+                        {
+                            tempFriend.displayName = it.displayName
+                        }
+                    }
+                    allFriends.add(tempFriend)
+                }
+                notifyDataChangeFunction()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w("Debug", databaseError.toException())
+            }
+        }
+        databaseRef.addListenerForSingleValueEvent(postListener)
+    }
+
+    fun loadFriendRequests(notifyDataChangeFunction: () -> (Unit))
+    {
+        val databaseRef = Firebase.database.reference.child("Users").child(Firebase.auth.uid!!).child("Pending friend requests")
+        val postListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (friend in dataSnapshot.children)
+                {
+                    var tempFriendRequest = User()
+                    tempFriendRequest.ID = friend.value as String
+                    allUsers.forEach(){
+                        if (it.ID == tempFriendRequest.ID)
+                        {
+                            tempFriendRequest.displayName = it.displayName
+                        }
+                    }
+                    allFriendRequests.add(tempFriendRequest)
+                }
+                notifyDataChangeFunction()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w("Debug", databaseError.toException())
+            }
+        }
+        databaseRef.addListenerForSingleValueEvent(postListener)
+    }
+
     fun addFriend(addedUserID : String)
     {
-        Firebase.database.reference.child("Users").child(addedUserID).child("Pending friend requests").child("SenderUserID").setValue(Firebase.auth.uid)
+        Firebase.database.reference.child("Users").child(addedUserID).child("Pending friend requests").push().setValue(Firebase.auth.uid)
     }
 }
