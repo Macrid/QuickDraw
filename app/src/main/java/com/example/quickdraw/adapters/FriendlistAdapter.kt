@@ -34,6 +34,8 @@ class FriendlistAdapter() : RecyclerView.Adapter<FriendlistViewHolder>() {
         var currentFriend: User
         if (position < mainFragment.friendlistVM.getAllFriends().size)
         {
+            holder.friendRejectButton.visibility = View.GONE
+            holder.friendAcceptButton.visibility = View.GONE
             currentFriend = mainFragment.friendlistVM.getAllFriends()[position]
         }
         else
@@ -45,11 +47,13 @@ class FriendlistAdapter() : RecyclerView.Adapter<FriendlistViewHolder>() {
         holder.friendIDTextView.text = currentFriend.ID
 
         holder.friendAcceptButton.setOnClickListener {
-
+            mainFragment.friendlistVM.acceptFriendRequest(currentFriend.ID!!)
+            mainFragment.friendlistVM.loadData { mainFragment.friendlistAdapter.notifyDataSetChanged() }
         }
 
         holder.friendRejectButton.setOnClickListener {
-
+            mainFragment.friendlistVM.rejectFriendRequest(currentFriend.ID!!)
+            mainFragment.friendlistVM.loadData { mainFragment.friendlistAdapter.notifyDataSetChanged() }
         }
     }
 

@@ -53,7 +53,7 @@ class LoginFragment : Fragment() {
             auth.createUserWithEmailAndPassword(emailField.text.toString(), passwordField.text.toString()).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Navigation.findNavController(requireView()).navigate(R.id.action_loginFragment_to_mainMenuFragment)
-                    databaseRef.child("Users").child(auth.uid!!).child("Display Name").setValue("Fint namn")
+                    databaseRef.child("Users").child(auth.uid!!).child("displayName").setValue("Fint namn")
                     databaseRef.child("Users").child(auth.uid!!).child("ID").setValue(auth.uid!!)
                 } else {
                     Log.d("DEBUG", "fel reg")

@@ -37,14 +37,15 @@ class FriendlistFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        friendlistVM = ViewModelProvider(this).get(FriendlistViewModel::class.java)
         friendlistAdapter.mainFragment = this
         var friendlistView = requireView().findViewById<RecyclerView>(R.id.friendListRV)
         friendlistView.layoutManager = LinearLayoutManager(this.context)
         friendlistView.adapter = friendlistAdapter
 
+        friendlistVM.loadData { (friendlistView.adapter as FriendlistAdapter).notifyDataSetChanged() }
 
 
-        friendlistVM = ViewModelProvider(this).get(FriendlistViewModel::class.java)
         friendlistSearchAdapter.mainFragment = this
 
         val friendSearch = requireView().findViewById<SearchView>(R.id.friendSearch)
@@ -53,7 +54,6 @@ class FriendlistFragment : Fragment() {
         friendSearchListView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         friendSearchListView.adapter = friendlistSearchAdapter
 
-        friendlistVM.loadData { (friendlistView.adapter as FriendlistAdapter).notifyDataSetChanged() }
         friendSearch.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 friendlistVM.filterUsers(query!!)
@@ -66,32 +66,5 @@ class FriendlistFragment : Fragment() {
                 return false
             }
         })
-
-        /*
-        friendSearch.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                friendSearch.clearFocus()
-                friendlistVM.allUsers.forEach {
-                    if(it.displayName!!.contains(query!!))
-                    {
-
-                    }
-                }
-                //{
-                   // friendSearchAdapter.filter.filter(query)
-               // }
-                else{
-                    Toast.makeText(requireContext().applicationContext, "Found nobody with that name :(", Toast.LENGTH_LONG).show()
-                }
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                //friendSearchAdapter.filter.filter(newText)
-                return false
-            }
-        })
-
-         */
     }
 }

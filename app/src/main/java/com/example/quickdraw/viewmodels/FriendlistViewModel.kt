@@ -47,6 +47,9 @@ class FriendlistViewModel : ViewModel() {
 
     fun loadData(notifyDataChangeFunction: () -> (Unit))
     {
+        allUsers.clear()
+        allFriends.clear()
+        allFriendRequests.clear()
         val databaseRef = Firebase.database.reference.child("Users")
         val postListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -131,6 +134,18 @@ class FriendlistViewModel : ViewModel() {
 
     fun addFriend(addedUserID : String)
     {
-        Firebase.database.reference.child("Users").child(addedUserID).child("Pending friend requests").push().setValue(Firebase.auth.uid)
+        Firebase.database.reference.child("Users").child(addedUserID).child("Pending friend requests").child(Firebase.auth.uid!!).setValue(Firebase.auth.uid)
+    }
+
+    fun acceptFriendRequest(senderUserID : String)
+    {
+        Firebase.database.reference.child("Users").child(Firebase.auth.uid!!).child("Friends").push().setValue(senderUserID)
+        Firebase.database.reference.child("Users").child(senderUserID).child("Friends").push().setValue(Firebase.auth.uid!!)
+        Firebase.database.reference.child("Users").child(Firebase.auth.uid!!).child("Pending friend requests").child(senderUserID).removeValue()
+    }
+
+    fun rejectFriendRequest(senderUserID : String)
+    {
+        Firebase.database.reference.child("Users").child(Firebase.auth.uid!!).child("Pending friend requests").child(senderUserID).removeValue()
     }
 }
