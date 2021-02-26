@@ -32,6 +32,10 @@ class MainMenuFragment : Fragment() {
         requireView().findViewById<Button>(R.id.friendlistButton).setOnClickListener {
             Navigation.findNavController(requireView()).navigate(R.id.action_mainMenuFragment_to_friendlistFragment)
         }
+        requireView().findViewById<Button>(R.id.settingsButton).setOnClickListener {
+            Navigation.findNavController(requireView()).navigate(R.id.action_mainMenuFragment_to_settingsFragment)
+        }
+
         var activeGamesAdapter = ActiveGamesAdapter()
         activeGamesAdapter.mainFragment = this
         var recView = requireView().findViewById<RecyclerView>(R.id.activeGamesRV)
