@@ -6,14 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quickdraw.adapters.ActiveGamesAdapter
 import com.example.quickdraw.R
+import com.example.quickdraw.viewmodels.MainMenuViewModel
 
 
 class MainMenuFragment : Fragment() {
+    lateinit var mainMenuVM : MainMenuViewModel
+    var activeGamesAdapter = ActiveGamesAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +33,17 @@ class MainMenuFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        mainMenuVM = ViewModelProvider(this).get(MainMenuViewModel::class.java)
+        activeGamesAdapter.mainFragment = this
+
+        var recView = requireView().findViewById<RecyclerView>(R.id.activeGamesRV)
+        recView.layoutManager = LinearLayoutManager(this.context)
+        recView.adapter = activeGamesAdapter
+
+        mainMenuVM.getGameIDs(){
+            activeGamesAdapter.notifyDataSetChanged()
+        }
+
         requireView().findViewById<Button>(R.id.friendlistButton).setOnClickListener {
             Navigation.findNavController(requireView()).navigate(R.id.action_mainMenuFragment_to_friendlistFragment)
         }
@@ -36,11 +51,6 @@ class MainMenuFragment : Fragment() {
             Navigation.findNavController(requireView()).navigate(R.id.action_mainMenuFragment_to_settingsFragment)
         }
 
-        var activeGamesAdapter = ActiveGamesAdapter()
-        activeGamesAdapter.mainFragment = this
-        var recView = requireView().findViewById<RecyclerView>(R.id.activeGamesRV)
 
-        recView.layoutManager = LinearLayoutManager(this.context)
-        recView.adapter = activeGamesAdapter
     }
 }

@@ -43,8 +43,8 @@ class FriendlistFragment : Fragment() {
         friendlistView.layoutManager = LinearLayoutManager(this.context)
         friendlistView.adapter = friendlistAdapter
 
-        friendlistVM.loadData { (friendlistView.adapter as FriendlistAdapter).notifyDataSetChanged() }
-
+       // friendlistVM.loadData { (friendlistView.adapter as FriendlistAdapter).notifyDataSetChanged() }
+        friendlistVM.loadData { friendlistAdapter.notifyDataSetChanged() }
 
         friendlistSearchAdapter.mainFragment = this
 
