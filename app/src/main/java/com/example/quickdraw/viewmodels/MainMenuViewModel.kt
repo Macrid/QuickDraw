@@ -10,12 +10,15 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 class MainMenuViewModel : ViewModel() {
     private var activeGames = mutableListOf<Game>()
     private var pendingGames = mutableListOf<Game>()
     private var activeGameIDs = mutableListOf<String>()
     private var pendingGameIDs = mutableListOf<String>()
+    //private var friends = mutableListOf<User>()
+    private var friendsDisplayNames = mutableListOf<String>()
 
     fun getActiveGames() : MutableList<Game>
     {
@@ -24,6 +27,16 @@ class MainMenuViewModel : ViewModel() {
     fun getPendingGames() : MutableList<Game>
     {
         return  pendingGames
+    }
+    /*
+    fun getFriends() : MutableList<User>
+    {
+        return  friends
+    }
+*/
+    fun getFriendsDisplayNames() : MutableList<String>
+    {
+        return friendsDisplayNames
     }
 
     fun getGameIDs(function: () -> Unit)
@@ -87,5 +100,45 @@ class MainMenuViewModel : ViewModel() {
             }
         }
         databaseRef.addListenerForSingleValueEvent(postListener)
+    }
+
+    fun loadFriends(notifyDataChangeFunction: () -> (Unit))
+    {
+        val databaseRef = Firebase.database.reference.child("Users")
+        val postListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (friend in dataSnapshot.child(Firebase.auth.uid!!).child("Friends").children)
+                {/*
+                    var tempFriend = User()
+                    tempFriend.ID = friend.value as String
+                    tempFriend.displayName = dataSnapshot.child(friend.value.toString()).child("displayName").value.toString()
+                    friends.add(tempFriend)
+                    */
+                    friendsDisplayNames.add(dataSnapshot.child(friend.value.toString()).child("displayName").value.toString())
+                }
+                notifyDataChangeFunction()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w("Debug", databaseError.toException())
+            }
+        }
+        databaseRef.addListenerForSingleValueEvent(postListener)
+    }
+
+    fun createNewGame(firstInvitedPlayer : String, secondInvitedPlayer : String)
+    {
+        val newGameID = UUID.randomUUID()
+        Firebase.database.reference.child("Games").child("Pending Games").child(newGameID.toString()).child("Players").child(Firebase.auth.uid!!).child("Has accepted").setValue(true)
+        Firebase.database.reference.child("Games").child("Pending Games").child(newGameID.toString()).child("Players").child(firstInvitedPlayer).child("Has accepted").setValue(true)
+        Firebase.database.reference.child("Games").child("Pending Games").child(newGameID.toString()).child("Players").child(secondInvitedPlayer).child("Has accepted").setValue(true)
+
+        sendGameInvite(firstInvitedPlayer, newGameID.toString())
+        sendGameInvite(secondInvitedPlayer, newGameID.toString())
+    }
+
+    fun sendGameInvite(userID : String, gameID : String)
+    {
+        Firebase.database.reference.child("Users").child(userID).child("Pending game invites").push().setValue(gameID)
     }
 }
